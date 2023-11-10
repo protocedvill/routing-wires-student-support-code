@@ -22,14 +22,14 @@ public class Board {
     }
 
     public int getValue(Coord c) {
-        return this.grid[(c.x * this.width) + c.y];
+        return this.grid[(c.row * this.width) + c.column];
     }
 
     public void unset(Coord c) {
-        if (this.grid[(c.x * this.width) + c.y] == -1) {
+        if (this.grid[(c.row * this.width) + c.column] == -1) {
             throw new ObstacleException(c);
         } else {
-            this.grid[(c.x * this.width) + c.y] = 0;
+            this.grid[(c.row * this.width) + c.column] = 0;
         }
     }
 
@@ -38,11 +38,11 @@ public class Board {
             throw new IllegalArgumentException("Wire value must be >= 1");
         }
 
-        if (this.grid[(c.x * this.width) + c.y] == -1) {
+        if (this.grid[(c.row * this.width) + c.column] == -1) {
             // We can't overwrite obstacles.
             throw new ObstacleException(c);
         } else {
-            this.grid[(c.x * this.width) + c.y] = value;
+            this.grid[(c.row * this.width) + c.column] = value;
         }
     }
 
@@ -78,7 +78,7 @@ public class Board {
             // We avoid using the setter because we've already sanity checked
             // the wire as a whole, so we don't need to check each individual
             // point along the path.
-            this.grid[(c.x * this.width) + c.y] = wire.id;
+            this.grid[(c.row * this.width) + c.column] = wire.id;
         }
     }
 
@@ -94,20 +94,20 @@ public class Board {
     public ArrayList<Coord> adj(Coord c) {
         ArrayList<Coord> adjs = new ArrayList<Coord>();
 
-        if (c.x + 1 < this.height) {
-            adjs.add(new Coord(c.x + 1, c.y));
+        if (c.row + 1 < this.height) {
+            adjs.add(new Coord(c.row + 1, c.column));
         }
 
-        if (c.x - 1 >= 0) {
-            adjs.add(new Coord(c.x - 1, c.y));
+        if (c.row - 1 >= 0) {
+            adjs.add(new Coord(c.row - 1, c.column));
         }
 
-        if (c.y + 1 < this.width) {
-            adjs.add(new Coord(c.x, c.y + 1));
+        if (c.column + 1 < this.width) {
+            adjs.add(new Coord(c.row, c.column + 1));
         }
 
-        if (c.y - 1 >= 0) {
-            adjs.add(new Coord(c.x, c.y - 1));
+        if (c.column - 1 >= 0) {
+            adjs.add(new Coord(c.row, c.column - 1));
         }
 
         return adjs;
@@ -164,19 +164,19 @@ public class Board {
     
     public class ObstacleException extends RuntimeException {
         public ObstacleException(Coord loc) {
-            super("Unable to overwrite obstacle at coordinate (" + loc.x + ", " + loc.y + ")");
+            super("Unable to overwrite obstacle at coordinate (" + loc.row + ", " + loc.column + ")");
         }
     }
 
     public class WireWireException extends RuntimeException {
         public WireWireException(Coord loc) {
-            super("Unable to overwrite one wire with another at coordinate (" + loc.x + ", " + loc.y + ")");
+            super("Unable to overwrite one wire with another at coordinate (" + loc.row + ", " + loc.column + ")");
         }
     }
 
     public class WireAdjacencyException extends RuntimeException {
         public WireAdjacencyException(Coord point0, Coord point1) {
-            super("Consecutive wire points are non-adjacent: (" + point0.x + ", " + point0.y + ") and (" + point1.x + ", " + point1.y + ")");
+            super("Consecutive wire points are non-adjacent: (" + point0.row + ", " + point0.column + ") and (" + point1.row + ", " + point1.column + ")");
         }
     }
 }

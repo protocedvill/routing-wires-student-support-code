@@ -152,7 +152,7 @@ public class Utilities {
 
 			Integer board_val = board.getValue(path_component);
 			if (board_val != wire.id) {
-				System.out.println("Incorrect wire label at " + path_component.x + ", " + path_component.y + ":\n" +
+				System.out.println("Incorrect wire label at " + path_component.row + ", " + path_component.column + ":\n" +
 				                   "\tExpected: " + wire.id + "\n" +
 				                   "\tGot:      " + board_val);
 				return false;

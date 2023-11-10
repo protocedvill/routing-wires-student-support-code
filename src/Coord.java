@@ -1,17 +1,17 @@
 public class Coord {
-	public final int x;
-	public final int y;
+	public final int row;
+	public final int column;
 
 	public Coord(final int arg_x, final int arg_y) {
-		this.x = arg_x;
-		this.y = arg_y;
+		this.row = arg_x;
+		this.column = arg_y;
 	}
 
 	public static int compare(Coord a, Coord b) {
-		if (a.x < b.x) {
+		if (a.row < b.row) {
 			return -1;
-		} else if (a.x == b.x) {
-			return Integer.compare(a.y, b.y);
+		} else if (a.row == b.row) {
+			return Integer.compare(a.column, b.column);
 		} else {
 			return 1;
 		}
@@ -22,23 +22,23 @@ public class Coord {
 			return false;
 		} else {
 			Coord other = (Coord) obj;
-			return this.x == other.x && this.y == other.y;
+			return this.row == other.row && this.column == other.column;
 		}
 	}
 
 	public boolean isAdjacent(Coord other) {
-		return this.x == other.x && this.y == (other.y + 1) ||
-			   this.x == other.x && this.y == (other.y - 1) ||
-			   this.x == (other.x + 1) && this.y == other.y ||
-			   this.x == (other.x - 1) && this.y == other.y;
+		return this.row == other.row && this.column == (other.column + 1) ||
+			   this.row == other.row && this.column == (other.column - 1) ||
+			   this.row == (other.row + 1) && this.column == other.column ||
+			   this.row == (other.row - 1) && this.column == other.column;
 	}
 
 	public int hashCode() {
-		String repr = String.valueOf(this.x) + " " + String.valueOf(this.y);
+		String repr = String.valueOf(this.row) + " " + String.valueOf(this.column);
 		return repr.hashCode();
 	}
 
 	public String toString() {
-		return "(" + String.valueOf(this.x) + ", " + String.valueOf(this.y) + ")";
+		return "(" + String.valueOf(this.row) + ", " + String.valueOf(this.column) + ")";
 	}
 }
