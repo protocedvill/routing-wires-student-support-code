@@ -23,7 +23,8 @@ public class Routing {
     public static Wire findPath(Board board, Endpoints goal) {
         pathCoord start = new pathCoord(goal.start);
         pathCoord end = new pathCoord(goal.end);
-        PriorityQueue<pathCoord> bfs = new PriorityQueue<>((pathCoord c1, pathCoord c2) -> (c1.column - c2.column + c1.row - c2.column));
+        PriorityQueue<pathCoord> bfs = new PriorityQueue<>((pathCoord c1, pathCoord c2) -> (
+                Math.abs(c1.column - end.column) + Math.abs(c1.row - end.row) < Math.abs(c2.column - end.column) + Math.abs(c2.row - end.row) ? 1 : -1));
         bfs.add(start);
         HashMap<Coord, Boolean> visited = new HashMap<>();
         visited.put(start.coord, true);

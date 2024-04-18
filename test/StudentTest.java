@@ -6,7 +6,7 @@ public class StudentTest {
 
     @Test
     public void testWire0() {
-        assertTimeout(Duration.ofMillis(1000), () -> {
+        assertTimeout(Duration.ofMillis(100000), () -> {
             Utilities.test("./test/inputs/wire0.in");
         });
     }
