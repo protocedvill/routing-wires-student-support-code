@@ -13,79 +13,54 @@ public class Routing {
     findPaths(Board board, ArrayList<Endpoints> goals) {
         ArrayList<Wire> wireList = new ArrayList<>();
         for (int i = 0; i < goals.size();i++) {
-            wireList.add(findPath(board, goals.get(i)));
+            Wire wire = findPath(board, goals.get(i));
+            wireList.add(wire);
+            if (wire != null) board.placeWire(wire);
         }
         return wireList;  // replace this line with your code
     }
 
     public static Wire findPath(Board board, Endpoints goal) {
-        ArrayList<Coord> path = new ArrayList<>();
-        if (goal.start == goal.end) {
-            path.add(goal.end);
-            return new Wire(goal.id, path);
-        }
-
-        ArrayList<pathCoord> edges = new ArrayList<>();
         pathCoord start = new pathCoord(goal.start);
         pathCoord end = new pathCoord(goal.end);
-        edges.add(start);
-        Queue<pathCoord> bfs = new ArrayDeque<>();
+        PriorityQueue<pathCoord> bfs = new PriorityQueue<>((pathCoord c1, pathCoord c2) -> (c1.column - c2.column + c1.row - c2.column));
         bfs.add(start);
+        HashMap<Coord, Boolean> visited = new HashMap<>();
+        visited.put(start.coord, true);
 
-        while (!edges.contains(end)) {
-            if (edges.isEmpty()) {
-                System.out.println("null");
+        while (true) {
+            if (bfs.isEmpty()) {
+                System.out.println("queue empty!");
                 return null;
             }
-            starOnce(board, edges, goal.end);
-        }
 
-        Wire wire = new Wire(goal.id);
+            pathCoord parent = bfs.remove();
+            ArrayList<Coord> valid = validAdjacent(board, parent.coord, goal.end, visited);
+            for (Coord c : valid) {
+                if (c.equals(end)) return pathCoordToWire(new pathCoord(c, parent), goal.id);
+                bfs.add(new pathCoord(c, parent));
+            }
+        }
+    }
+
+    public static Wire pathCoordToWire(pathCoord pcoord, int id) {
+        Wire wire = new Wire(id);
         ArrayList<Coord> reverse = new ArrayList<>();
-        pathCoord traverse = edges.get(edges.size() - 1);
-        while(traverse != null) {
-            reverse.add(traverse.coord);
-            traverse = traverse.prev;
+        while (pcoord != null) {
+            reverse.add(pcoord.coord);
+            pcoord = pcoord.prev;
         }
         Collections.reverse(reverse);
-        for (Coord i : reverse) {
-            wire.add(i);
-        }
-        board.placeWire(wire);
+        for (Coord i : reverse) wire.add(i);
         return wire;
     }
 
-    public static void starOnce(Board board, ArrayList<pathCoord> edges, Coord goal) {
-        ArrayList<pathCoord> removeable = new ArrayList<>();
-        ArrayList<pathCoord> toEdge = new ArrayList<>();
-        for (pathCoord i : edges) {
-            ArrayList<Coord> validAdj = validAdjacent(board, i, edges, goal);
-            if (validAdj.contains(goal)) {
-                toEdge.add(new pathCoord(validAdj.get(0), i));
-                break;
-            }
-            if (validAdj.isEmpty()) removeable.add(i);
-            for (Coord x : validAdj) {
-                toEdge.add(new pathCoord(x, i));
-            }
-        }
-        System.out.println("Size of edge list is " + edges.size() + ", adding " + toEdge.size() + ", removing " + removeable.size());
-        edges.addAll(toEdge);
-        edges.removeAll(removeable);
-    }
-
-    public static ArrayList<Coord> validAdjacent (Board board, Coord coord, ArrayList<pathCoord> edges, Coord goal) {
+    public static ArrayList<Coord> validAdjacent (Board board, Coord coord, Coord goal, HashMap<Coord, Boolean> visited) {
         ArrayList<Coord> x = new ArrayList<>();
         for (Coord i : board.adj(coord)) {
-            if (!board.isObstacle(i) && !board.isOccupied(i) && !edges.contains(i)) {
-                //System.out.println(coord + " to " + i);
+            if (!board.isObstacle(i) && !board.isOccupied(i) && !visited.containsKey(i) || i.equals(goal)) {
+                visited.put(i, true);
                 x.add(i);
-            }
-            if (i.equals(goal)) {
-                //System.out.println("Found goal: " + coord + " to " + i);
-                x.clear();
-                x.add(i);
-                return x;
             }
         }
         return x;
