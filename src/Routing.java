@@ -11,10 +11,8 @@ public class Routing {
      */
     public static ArrayList<Wire>
     findPaths(Board board, ArrayList<Endpoints> goals) {
-        Queue<Endpoints> goalQueue = new ArrayDeque<>();
-        goalQueue.addAll(goals);
+        Queue<Endpoints> goalQueue = new ArrayDeque<>(goals);
 
-        ArrayList<Wire> wireList = new ArrayList<>();
         PriorityQueue<Wire> wirePriorityQueue = new PriorityQueue<>((Wire w1, Wire w2) -> (w1.length() < w2.length() ? 1 : -1));
         while (!goalQueue.isEmpty()) {
             Endpoints goal = goalQueue.remove();
@@ -48,7 +46,7 @@ public class Routing {
             }
 
         }
-        wireList.addAll(wirePriorityQueue);
+        ArrayList<Wire> wireList = new ArrayList<>(wirePriorityQueue);
         return wireList;
     }
 

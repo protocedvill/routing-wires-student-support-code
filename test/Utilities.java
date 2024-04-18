@@ -78,6 +78,8 @@ public class Utilities {
 			// Score the wires if they were all valid.
 			scorePaths(wires);
 
+			//System.out.println(board);
+
 		} catch (BoardConstructionException e) {
 			System.out.println(e.getMessage());
 		}
@@ -171,7 +173,6 @@ public class Utilities {
 
 	public static void scorePaths(ArrayList<Wire> wires) {
 		int total_wire_length = 0;
-		System.out.println(wires);
 		for (Wire wire : wires) {
 			total_wire_length += wire.length();
 		}
