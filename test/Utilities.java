@@ -171,6 +171,7 @@ public class Utilities {
 
 	public static void scorePaths(ArrayList<Wire> wires) {
 		int total_wire_length = 0;
+		System.out.println(wires);
 		for (Wire wire : wires) {
 			total_wire_length += wire.length();
 		}

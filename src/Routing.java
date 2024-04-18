@@ -11,29 +11,58 @@ public class Routing {
      */
     public static ArrayList<Wire>
     findPaths(Board board, ArrayList<Endpoints> goals) {
+        Queue<Endpoints> goalQueue = new ArrayDeque<>();
+        goalQueue.addAll(goals);
+
         ArrayList<Wire> wireList = new ArrayList<>();
-        for (int i = 0; i < goals.size();i++) {
-            Wire wire = findPath(board, goals.get(i));
-            wireList.add(wire);
-            if (wire != null) board.placeWire(wire);
+        PriorityQueue<Wire> wirePriorityQueue = new PriorityQueue<>((Wire w1, Wire w2) -> (w1.length() < w2.length() ? 1 : -1));
+        while (!goalQueue.isEmpty()) {
+            Endpoints goal = goalQueue.remove();
+            Wire wire = findPath(board, goal);
+
+            ArrayList<Wire> removedWireList = new ArrayList<>();
+            while(!wirePriorityQueue.isEmpty() && wire == null) {
+                Wire longestWire = wirePriorityQueue.remove();
+                removedWireList.add(longestWire);
+                board.removeWire(longestWire);
+                wire = findPath(board, goal);
+            }
+
+            if (wire == null) {
+                for (Wire w : removedWireList) {
+                    board.placeWire(w);
+                    wirePriorityQueue.add(w);
+                }
+            }
+
+            if (wire != null) {
+                wirePriorityQueue.add(wire);
+                board.placeWire(wire);
+                for (Wire w : removedWireList) {
+                    wire = findPath(board, new Endpoints(w.id, w.start(),w.end()));
+                    if (wire != null) {
+                        wirePriorityQueue.add(wire);
+                        board.placeWire(wire);
+                    }
+                }
+            }
+
         }
-        return wireList;  // replace this line with your code
+        wireList.addAll(wirePriorityQueue);
+        return wireList;
     }
 
     public static Wire findPath(Board board, Endpoints goal) {
         pathCoord start = new pathCoord(goal.start);
         pathCoord end = new pathCoord(goal.end);
         PriorityQueue<pathCoord> bfs = new PriorityQueue<>((pathCoord c1, pathCoord c2) -> (
-                Math.abs(c1.column - end.column) + Math.abs(c1.row - end.row) < Math.abs(c2.column - end.column) + Math.abs(c2.row - end.row) ? 1 : -1));
+                Math.abs(end.column - c1.column) + Math.abs(end.row - c1.row) > Math.abs(end.column - c2.column) + Math.abs(end.row - c2.row) ? 1 : -1));
         bfs.add(start);
         HashMap<Coord, Boolean> visited = new HashMap<>();
         visited.put(start.coord, true);
 
         while (true) {
-            if (bfs.isEmpty()) {
-                System.out.println("queue empty!");
-                return null;
-            }
+            if (bfs.isEmpty()) return null;
 
             pathCoord parent = bfs.remove();
             ArrayList<Coord> valid = validAdjacent(board, parent.coord, goal.end, visited);
